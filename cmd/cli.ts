@@ -1,5 +1,8 @@
+import { $ } from "zx";
 import { Command } from "cliffy";
-import { stowCLIHandler } from "@services/stow.ts";
+import { StowService } from "@services/stow.ts";
+import { CLIOptions } from "@entities/domain.ts";
+import { logging } from "@services/logging.ts";
 
 /**
  * Main CLI command, as of right now the CLI does not have sub-commands.
@@ -19,3 +22,18 @@ function makeCommand() {
     .arguments("[file:string]")
     .action(stowCLIHandler);
 }
+
+
+export const stowCLIHandler = async (options: CLIOptions, file = "./stower.yml") => {
+  const service = StowService.create({
+    file,
+    logging,
+    sh: $,
+  });
+
+  try {
+    await service.apply();
+  } catch {
+    // none
+  }
+};

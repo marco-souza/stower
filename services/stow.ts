@@ -1,45 +1,61 @@
-import { $ } from "zx";
-import { StowPaths, CLIOptions } from "@entities/domain.ts";
-import * as logging from "@services/logging.ts";
+import { StowConfigs } from "@entities/domain.ts";
+import { Logging } from "@services/logging.ts";
 import * as YAML from "encoding/yaml.ts";
 
-export const stowCLIHandler = async (options: CLIOptions, file = "./stower.yml") => {
-  const stowPaths = getStowPaths(file);
+export type Shell<T = any> = (pieces: any, ...args: any[]) => Promise<T>
 
-  try {
-    await Promise.all([
-      ...stowConfigs(stowPaths.config),
-      ...stowFolders(stowPaths.folders),
-      ...stowLinks(stowPaths.links),
-    ])
-  } catch {
-    // none
-  }
+export type StowServiceDeps = {
+  sh: Shell;
+  file: string;
+  logging: Logging;
 };
 
-function getStowPaths(file: string, decoder = new TextDecoder()): StowPaths {
-  const content = Deno.readFileSync(file);
-  const payload = decoder.decode(content)
-  return YAML.parse(payload) as StowPaths;
-}
+export class StowService {
+  config: StowConfigs;
+  private decoder: TextDecoder;
 
-function stowConfigs(configs: StowPaths['config']) {
-  logging.debug("[info] stowing configs...")
-  return configs.map((config) => (
-    $`stow ${config}`
-  ))
-}
+  constructor(private deps: StowServiceDeps) {
+    this.decoder = new TextDecoder();
+    this.config = this.getStowConfigs();
+  }
 
-function stowFolders(folders: StowPaths['folders']) {
-  logging.debug("[info] stowing folders...")
-  return folders.map((folder) => (
-    $`ln -s ./${folder} $HOME/${folder}`
-  ))
-}
+  apply = () => Promise.all([...this.stowConfigs(), ...this.stowFolders(), ...this.stowLinks()]);
 
-function stowLinks(links: StowPaths['links']) {
-  logging.debug("[info] creating links...")
-  return  Object.entries(links).map(([dest, source]) => (
-    $`ln -s ${dest} ${source}`
-  ))
+  static create = (deps: StowServiceDeps) => new StowService(deps);
+
+  private getStowConfigs(): StowConfigs {
+    const { file } = this.deps;
+
+    const content = Deno.readFileSync(file);
+    const payload = this.decoder.decode(content);
+
+    return YAML.parse(payload) as StowConfigs;
+  }
+
+  private stowConfigs() {
+    const { sh, logging } = this.deps;
+    const { config } = this.config;
+
+    logging.debug("[info] stowing configs...");
+
+    return config.map((folder) => sh`stow ${folder}`);
+  }
+
+  private stowFolders() {
+    const { sh, logging } = this.deps;
+    const { folders } = this.config;
+
+    logging.debug("[info] stowing folders...");
+
+    return folders.map((folder) => sh`ln -s ./${folder} $HOME/${folder}`);
+  }
+
+  private stowLinks() {
+    const { sh, logging } = this.deps;
+    const { links } = this.config;
+
+    logging.debug("[info] creating links...");
+
+    return Object.entries(links).map(([dest, source]) => sh`ln -s ${dest} ${source}`);
+  }
 }

@@ -1,7 +1,12 @@
+export type LogFunc = (...data: any[]) => void
 
-export const {
-  debug,
-  info,
-  warn,
-  error
-} = console
+export type Logging = {
+  debug: LogFunc,
+  info: LogFunc,
+  warn: LogFunc,
+  error: LogFunc,
+}
+
+export const logging: Logging = {
+  ...console,
+}
