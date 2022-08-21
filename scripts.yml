@@ -1,0 +1,18 @@
+scripts:
+  allow:
+    - net
+  cli:
+    desc: Call CLI
+    cmd: ./mod.ts
+    unstable: true
+    allow:
+      - net
+      - run
+      - env
+      - read
+      - write
+
+  custom-cli:
+    desc: Call CLI with custom param
+    cmd: ./mod.ts -n deno
+    unstable: true
