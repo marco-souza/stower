@@ -1,4 +1,20 @@
-personal:
+# config
+config:
   - vim
   - zsh
+  - kde
   - steam
+  - emacs
+
+# folders
+folders:
+  - Downloads
+  - Dropbox
+  - Games
+  - Pictures
+  - workspace
+
+# links aliases
+links:
+  ~/notes: ~/Dropbox/notes
+  ~/dev: ~/workspace
