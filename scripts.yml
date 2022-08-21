@@ -21,3 +21,9 @@ scripts:
     desc: Run tests
     cmd: deno test
 
+  compile:
+    desc: Compile code
+    cmd: >
+      deno compile -c deno.jsonc -A --no-check
+      --import-map=./import_map.json
+      -o stower mod.ts
