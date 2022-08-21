@@ -1,13 +1,15 @@
 {
   "imports": {
     "@cmd/": "./cmd/",
-    "@services/": "./services/",
     "@entities/": "./entities/",
+    "@services/": "./services/",
+    "@tests/": "./tests/",
     "cliffy": "https://x.nest.land/cliffy@0.20.1/mod.ts",
-    "fmt/": "https://deno.land/std@0.152.0/fmt/",
     "colors": "https://deno.land/std@0.152.0/fmt/colors.ts",
     "encoding/": "https://deno.land/std@0.152.0/encoding/",
+    "fmt/": "https://deno.land/std@0.152.0/fmt/",
     "fs": "https://deno.land/std@0.152.0/fs/mod.ts",
+    "testing/": "https://deno.land/std@0.152.0/testing/",
     "zx": "https://deno.land/x/zx_deno@1.2.2/mod.mjs"
   }
 }

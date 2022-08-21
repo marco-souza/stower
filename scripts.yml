@@ -16,3 +16,8 @@ scripts:
     desc: Call CLI with custom param
     cmd: ./mod.ts -n deno
     unstable: true
+
+  tests:
+    desc: Run tests
+    cmd: deno test
+
